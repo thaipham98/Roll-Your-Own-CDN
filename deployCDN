@@ -1,0 +1,25 @@
+while getopts “p:o:n:u:i:” opts; do
+	case $opts in
+		p)
+		port=$OPTARG;;
+ 		o)
+		origin=$OPTARG;;
+		n)
+		name=$OPTARG;;
+		u)
+		username=$OPTARG;;
+		i)
+		keyfile=$OPTARG;;
+	esac
+done
+
+replica_servers = (p5-http-a.5700.network);
+
+for r_server in “${replica_servers[@]}”; do
+	scp -i $keyfile httpserver $username@r_server:~/
+	ssh -i $keyfile $username@r_server ‘chmod 711 ~/httpserver’
+done
+
+dns_server = p5-dns.5700.network
+scp -i $keyfile dnsserver $username@dns_server:~/
+ssh -i $keyfile $username@dns_server ‘chmod 711 ~/dnsserver’

@@ -1,0 +1,23 @@
+while getopts “p:o:n:u:i:” opts; do
+	case $opts in
+		p)
+		port=$OPTARG;;
+ 		o)
+		origin=$OPTARG;;
+		n)
+		name=$OPTARG;;
+		u)
+		username=$OPTARG;;
+		i)
+		keyfile=$OPTARG;;
+	esac
+done
+
+replica_servers = (p5-http-a.5700.network);
+
+for r_server in “${replica_servers[@]}”; do
+	ssh -i $keyfile $username@$r_server ‘killall -u’$username’ python’
+done
+
+dns_server = p5-dns.5700.network
+ssh -i $keyfile $username@$dns_server ‘killall -u’$username’ python’

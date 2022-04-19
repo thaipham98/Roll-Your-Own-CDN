@@ -1,0 +1,30 @@
+Project 5 CS5700: Roll Your Own CDN
+Bach Nguyen - Thai Pham
+
+1. High-Level Approach:
+- Understand how CDN works with DNS and HTTP servers
+- Implement server-client measurement
+- Implement DNS
+- Implement HTTP server
+- Write scripts (draft)
+
+2. DNS Implementation:
+We use socketserver library to get request from client and dnslib library to unpack receiving packet
+and pack sent-out packet
+
+3. HTTP Server Implementation:
+We use http.server library to create HTTP server, urllib library to get data from
+origin server and are working on cache mechanism (thinking of sqlite3 library, which is allowed)
+
+4. Measurement Implementation:
+We are currently using geo-location measurement. Plan to research about scamper for improvement
+
+5. Individual Contributions:
+- Thai Pham:
++ Implement DNS Server
++ Implement HTTP Server
++ Implement Measurement
+
+- Bach Nguyen:
++ Implement DNS Server
++ Write deploy/run/stop CDN script
