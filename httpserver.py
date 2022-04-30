@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+import socket
 import sys
 import threading
 import time
@@ -7,8 +7,8 @@ import urllib.request
 
 from cache import Cache
 
-hostName = "localhost"
-serverPort = 8080
+hostName = socket.gethostname()
+serverPort = 40009
 origin = "cs5700cdnorigin.ccs.neu.edu"
 
 
@@ -31,10 +31,10 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 class HTTPServer:
     def __init__(self, port, origin):
-        #self.cache = Cache()
+        #self.cache.py = Cache()
         RequestHandler.cache = Cache()
-        print("init cache")
-        self.server = ThreadingHTTPServer((hostName, serverPort), RequestHandler)
+        print("init cache.py")
+        self.server = ThreadingHTTPServer((hostName, port), RequestHandler)
         self.port = port
         self.origin = origin
 
