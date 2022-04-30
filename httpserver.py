@@ -8,7 +8,7 @@ import urllib.request
 from cache import Cache
 
 hostName = socket.gethostname()
-serverPort = 40009
+serverPort = 8080
 origin = "cs5700cdnorigin.ccs.neu.edu"
 
 
@@ -60,6 +60,6 @@ if __name__ == '__main__':
     if len(sys.argv) != 5:
         sys.exit("Invalid number of arguments")
     port = sys.argv[2]
-    origin = sys.argv[4]
+    origin = int(sys.argv[4])
     http_server = HTTPServer(port, origin)
     http_server.run()
