@@ -5,17 +5,23 @@ import time
 from http.server import *
 import urllib.request
 
+from cache import Cache
+
 hostName = "localhost"
 serverPort = 8080
 origin = "cs5700cdnorigin.ccs.neu.edu"
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    cache = None
     def do_GET(self):
         #print(origin + ":" + str(serverPort) + self.path)
+        html = self.cache.get_data(self.path)
 
-        with urllib.request.urlopen("http://" + origin + ":" + str(serverPort) + self.path) as response:
-            html = response.read()
+        if html == None:
+            with urllib.request.urlopen("http://" + origin + ":" + str(serverPort) + self.path) as response:
+                html = response.read()
+                self.cache.insert_data(self.path, html)
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -25,6 +31,9 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 class HTTPServer:
     def __init__(self, port, origin):
+        #self.cache = Cache()
+        RequestHandler.cache = Cache()
+        print("init cache")
         self.server = ThreadingHTTPServer((hostName, serverPort), RequestHandler)
         self.port = port
         self.origin = origin
@@ -50,8 +59,6 @@ class HTTPServer:
 if __name__ == '__main__':
     if len(sys.argv) != 5:
         sys.exit("Invalid number of arguments")
-
-    #TODO init cache
     port = sys.argv[2]
     origin = sys.argv[4]
     http_server = HTTPServer(port, origin)
