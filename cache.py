@@ -4,8 +4,7 @@ import sqlite3
 import sys
 import zlib
 
-#MB_20 = 18 * 1024 * 1024
-MB_20 = 1 * 1024 * 300
+MB_20 = 18 * 1024 * 1024
 
 class Cache:
     def __init__(self):
@@ -34,6 +33,10 @@ class Cache:
 
         return None
 
+    def close(self):
+        self.connection.commit()
+        self.connection.close()
+
     def get_cache_size(self):
         cache_stat = os.stat('cache.db')
         cache_size = cache_stat.st_size
@@ -45,10 +48,7 @@ class Cache:
         return cache_size + sys.getsizeof(data) > MB_20
 
     def insert_data(self, path, data):
-        print("insert data")
         compressed_data = zlib.compress(data)
-        print(sys.getsizeof(compressed_data))
-        #print(compressed_data)
         size = sys.getsizeof(compressed_data)
         frequency = 1
         if self.over_size(compressed_data):
@@ -57,13 +57,11 @@ class Cache:
         self.handler.execute("INSERT INTO Cache(Path,Content,Frequency,Size)VALUES(?,?,?,?)",
                              (path, compressed_data, frequency, size))
         self.connection.commit()
-        print("after insert", self.get_cache_size())
 
     def evict(self, file_size):
         print("evict data")
         cache_size = self.get_cache_size()
         while cache_size + file_size >= MB_20:
-#            print("before delete", self.get_cache_size())
             self.handler.execute(
                 "DELETE FROM Cache WHERE Path = (SELECT Path FROM Cache WHERE Frequency = (SELECT MIN(Frequency) FROM Cache))")
             self.connection.commit()

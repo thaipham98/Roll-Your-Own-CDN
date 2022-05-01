@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import datetime
 import socketserver
 import sys
 import threading
@@ -9,22 +8,18 @@ import traceback
 from dnslib import *
 
 # reference: https://gist.github.com/pklaus/b5a7876d4d2cf7271873
-from measurement import get_nearest_replicas
+from measurement import get_nearest_replica
 
 DOMAIN_NAME = "cs5700cdn.example.com."
-IP = '50.116.41.109'
 TTL = 60 * 5
 
 
 def dns_response(data, client_ip):
     request = DNSRecord.parse(data)
-    nearest_ip = get_nearest_replicas(client_ip)
+    nearest_ip = get_nearest_replica(client_ip)
 
     reply = DNSRecord(DNSHeader(id=request.header.id, qr=1, aa=1, ra=1), q=request.q)
 
-    qtype = request.q.qtype
-    qt = QTYPE[qtype]
-    # rdata = A(IP)
     rdata = A(nearest_ip)
 
     rqt = rdata.__class__.__name__
@@ -43,15 +38,9 @@ class BaseRequestHandler(socketserver.BaseRequestHandler):
         raise NotImplementedError
 
     def handle(self):
-        now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
-        # print("\n\n%s request %s (%s %s):" % (self.__class__.__name__[:3], now, self.client_address[0],
-        #                                        self.client_address[1]))
         client_ip = self.client_address[0]
         try:
             data = self.get_data()
-            # print("data", data.decode('utf-8'))
-
-            # print(len(data), data)  # repr(data).replace('\\x', '')[1:-1]
             self.send_data(dns_response(data, client_ip))
         except Exception:
             traceback.print_exc(file=sys.stderr)

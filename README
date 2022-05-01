@@ -28,3 +28,6 @@ We are currently using geo-location measurement. Plan to research about scamper 
 - Bach Nguyen:
 + Implement DNS Server
 + Write deploy/run/stop CDN script
+
+
+# reference: https://gist.github.com/pklaus/b5a7876d4d2cf7271873

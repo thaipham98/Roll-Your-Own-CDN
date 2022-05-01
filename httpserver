@@ -9,19 +9,18 @@ import urllib.request
 
 from cache import Cache
 
-hostName = socket.gethostname()
-serverPort = 8080
-origin = "cs5700cdnorigin.ccs.neu.edu"
+HOSTNAME = socket.gethostname()
+ORIGIN_SERVER_PORT = 8080
+ORIGIN_SERVER = "cs5700cdnorigin.ccs.neu.edu"
 
 
 class RequestHandler(BaseHTTPRequestHandler):
     cache = None
     def do_GET(self):
-        #print(origin + ":" + str(serverPort) + self.path)
         html = self.cache.get_data(self.path)
 
         if html == None:
-            with urllib.request.urlopen("http://" + origin + ":" + str(serverPort) + self.path) as response:
+            with urllib.request.urlopen("http://" + ORIGIN_SERVER + ":" + str(ORIGIN_SERVER_PORT) + self.path) as response:
                 html = response.read()
                 self.cache.insert_data(self.path, html)
 
@@ -33,10 +32,10 @@ class RequestHandler(BaseHTTPRequestHandler):
 
 class HTTPServer:
     def __init__(self, port, origin):
-        #self.cache.py = Cache()
-        RequestHandler.cache = Cache()
+        self.cache = Cache()
+        RequestHandler.cache = self.cache
         print("init cache.py")
-        self.server = ThreadingHTTPServer((hostName, port), RequestHandler)
+        self.server = ThreadingHTTPServer((HOSTNAME, port), RequestHandler)
         self.port = port
         self.origin = origin
 
@@ -56,12 +55,14 @@ class HTTPServer:
             pass
         finally:
             self.server.shutdown()
+            self.cache.close()
+
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 5:
         sys.exit("Invalid number of arguments")
     port = int(sys.argv[2])
-    origin = sys.argv[4]
-    http_server = HTTPServer(port, origin)
+    ORIGIN_SERVER = sys.argv[4]
+    http_server = HTTPServer(port, ORIGIN_SERVER)
     http_server.run()

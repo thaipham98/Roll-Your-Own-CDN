@@ -21,10 +21,12 @@ servers_length=${#replica_servers[@]}
 
 for (( i = 0; i < ${servers_length}; i++ )); 
 do
+    scp -i $keyfile cache.py $username@${replica_servers[$i]}:~/
 	scp -i $keyfile httpserver $username@${replica_servers[$i]}:~/
 	ssh -i $keyfile $username@${replica_servers[$i]} chmod u+x httpserver
 done
 
 dns_server="p5-dns.5700.network"
 scp -i $keyfile dnsserver $username@$dns_server:~/
+scp -i $keyfile measurement.py $username@$dns_server:~/
 ssh -i $keyfile $username@$dns_server chmod u+x dnsserver
