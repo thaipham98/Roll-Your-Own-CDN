@@ -1,3 +1,5 @@
+#!/bin/bash
+
 while getopts “p:o:n:u:i:” opts; do
 	case $opts in
 		p)
@@ -13,14 +15,16 @@ while getopts “p:o:n:u:i:” opts; do
 	esac
 done
 
-replica_servers = (p5-http-a.5700.network, p5-http-b.5700.network, p5-http-c.5700.network, p5-http-d.5700.network,
-p5-http-e.5700.network, p5-http-f.5700.network, p5-http-g.5700.network);
+declare -a replica_servers=("p5-http-a.5700.network" "p5-http-b.5700.network" "p5-http-c.5700.network" "p5-http-d.5700.network" "p5-http-e.5700.network" "p5-http-f.5700.network" "p5-http-g.5700.network") 
 
-for r_server in “${replica_servers[@]}”; do
-	scp -i $keyfile httpserver $username@r_server:~/
-	ssh -i $keyfile $username@r_server ‘chmod 711 ~/httpserver’
+servers_length=${#replica_servers[@]}
+
+for (( i = 0; i < ${servers_length}; i++ )); 
+do
+	scp -i $keyfile httpserver $username@${replica_servers[$i]}:~/
+	ssh -i $keyfile $username@${replica_servers[$i]} chmod u+x httpserver
 done
 
-dns_server = p5-dns.5700.network
-scp -i $keyfile dnsserver $username@dns_server:~/
-ssh -i $keyfile $username@dns_server ‘chmod 711 ~/dnsserver’
+dns_server="p5-dns.5700.network"
+scp -i $keyfile dnsserver $username@$dns_server:~/
+ssh -i $keyfile $username@$dns_server chmod u+x dnsserver
