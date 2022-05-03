@@ -103,6 +103,8 @@ class myThread(threading.Thread):
         threading.Thread.__init__(self)
         self.server_ip = server_ip
         self.client_ip = client_ip
+    def run(self):
+        get_rtt(self.server_ip, self.client_ip)
 
 
 def get_rtt(server_ip, client_ip):
