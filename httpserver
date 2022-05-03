@@ -17,6 +17,12 @@ ORIGIN_SERVER = "cs5700cdnorigin.ccs.neu.edu"
 class RequestHandler(BaseHTTPRequestHandler):
     cache = None
     def do_GET(self):
+
+        if self.path == "/grading/beacon":
+            print("hit beacon:", self.path)
+            self.send_response(204)
+            return
+
         html = self.cache.get_data(self.path)
 
         if html == None:
