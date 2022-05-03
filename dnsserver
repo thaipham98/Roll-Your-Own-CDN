@@ -21,7 +21,6 @@ def dns_response(data, client_ip):
             request = DNSRecord.parse(data)
             break
         except (BufferError, DNSError):
-            print("error")
             continue
 
     nearest_ip = get_nearest_replica(client_ip)

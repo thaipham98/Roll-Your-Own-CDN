@@ -44,7 +44,6 @@ def get_ip_geolocation(ip):
             response_json = json.load(response)
             break
         except Exception as e:
-            print(e)
             continue
     return response_json['lon'], response_json['lat']
 
@@ -91,11 +90,9 @@ MAX_NEAREST_REPLICAS_SELECTED = 1
 
 def get_nearest_replica(client_ip):
     if client_ip in ip_cache.keys():
-        print("ip cache hit for client ip", client_ip, ' with nearest ip ', ip_cache[client_ip])
         return ip_cache[client_ip]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
     nearest_ip = REPLICA_HOST[distance_tuple_list[0][0]]
     ip_cache[client_ip] = nearest_ip
-    print('set ip cache for ip', client_ip, ' with nearest ip', nearest_ip)
     return nearest_ip

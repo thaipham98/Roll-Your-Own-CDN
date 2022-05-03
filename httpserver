@@ -20,7 +20,6 @@ class RequestHandler(BaseHTTPRequestHandler):
     cache = None
     def do_GET(self):
         if self.path == "/grading/beacon":
-            print("hit beacon:", self.path)
             self.send_response(204)
             self.end_headers()
             return
