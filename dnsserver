@@ -31,7 +31,6 @@ def dns_response(data, client_ip):
 
     rqt = rdata.__class__.__name__
     reply.add_answer(RR(rname=DOMAIN_NAME, rtype=getattr(QTYPE, rqt), rclass=1, ttl=TTL, rdata=rdata))
-    #print("---- Reply:\n", reply)
 
     return reply.pack()
 
