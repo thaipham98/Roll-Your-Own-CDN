@@ -1,10 +1,9 @@
-import _thread
+import json
 import socket
 import threading
-from math import radians, cos, sin, asin, sqrt
-import urllib.request
-import json
 import time
+import urllib.request
+from math import radians, cos, sin, asin, sqrt
 
 PORT = 40009
 EXPIRY = 10
@@ -120,7 +119,7 @@ def get_rtt(server_ip, client_ip):
 
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
-    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] <= current_time + EXPIRY:
+    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] <= current_time - EXPIRY:
         print("hit in")
         return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
