@@ -119,15 +119,13 @@ def get_rtt(server_ip, client_ip):
 
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
-    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] <= current_time - EXPIRY:
+    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] >= current_time - EXPIRY:
         print("hit in")
         return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
     nearest_geo_ip = REPLICA_HOST[distance_tuple_list[0][0]]
     two_nearest_ip = [nearest_geo_ip, REPLICA_HOST[distance_tuple_list[1][0]]]
-
-    # record = {}
 
     thread1 = myThread(two_nearest_ip[0], client_ip)
     thread2 = myThread(two_nearest_ip[1], client_ip)
@@ -136,11 +134,6 @@ def get_nearest_replica(client_ip):
     thread1.join()
     thread2.join()
 
-    # try:
-    #     _thread.start_new_thread(get_rtt, (two_nearest_ip[0], client_ip, record))
-    #     _thread.start_new_thread(get_rtt, (two_nearest_ip[1], client_ip, record))
-    # except:
-    #     return nearest_ip
     if len(record) == 0:
         return nearest_geo_ip
 
