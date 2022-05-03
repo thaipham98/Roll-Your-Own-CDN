@@ -1,33 +1,92 @@
 Project 5 CS5700: Roll Your Own CDN
-Bach Nguyen - Thai Pham
+Group BTTB: Bach Nguyen & Thai Pham
 
-1. High-Level Approach:
-- Understand how CDN works with DNS and HTTP servers
-- Implement server-client measurement
-- Implement DNS
-- Implement HTTP server
-- Write scripts (draft)
 
-2. DNS Implementation:
-We use socketserver library to get request from client and dnslib library to unpack receiving packet
-and pack sent-out packet
+** High-Level Approach **
+- We always make sure that we clearly understand how CDN works with DNS and HTTP
+servers before getting our hands on it (thanks Joe for helping!).
 
-3. HTTP Server Implementation:
-We use http.server library to create HTTP server, urllib library to get data from
-origin server and are working on cache mechanism (thinking of sqlite3 library, which is allowed)
+- With the knowledge that dnslib library is allowed, we have done some research to see
+how we can implement our DNS server using it. While doing that, we also implement a function
+in measurement.py file in order to retrieve the nearest replica, thus sending clients to the
+replica server with the fastest response time.
 
-4. Measurement Implementation:
-We are currently using geo-location measurement. Plan to research about scamper for improvement
+- For the HTTP server, with the knowledge that the http.server is allowed, we take advantage
+of that to implement our HTTP server. We also incorporate codes for Cache and active measurement
+using ping while doing this.
 
-5. Individual Contributions:
+- We then finish our measurement implementation using urllib request library and IP API
+(measurement.py), and our Cache implementation using sqlite3. More details below (all references
+are at the end of this README).
+
+- We end up writing our scripts for deploying, running and stopping our program.
+
+
+** DESIGN DECISION, EVALUATION, AND LESSON LEARNED **
+** BEGIN OF THIS SECTION **
+
+* DNS Server *
+- We decide to use dnslib library due to its convenience and good functionality support for implementing
+the DNS server.
+- We use it to pack data and also have a memory cache in order to get the closest IP. We also design such
+that the cache is invalidate after five minutes.
+- We evaluate the effective through trial and errors, also based on our group’s beacon status found at
+port 40009 on https://p5-beacon.5700.network/.
+
+* HTTP Server *
+- We decide to use http.server library to handle beacon and query data request.
+- We also implement a cache underneath.
+- We evaluate the effective through trial and errors, also based on our group’s beacon status found at
+port 40009 on https://p5-beacon.5700.network/.
+
+* Cache *
+- We implement a local cache using sqlite3 library to improve query time.
+- The Database (DB) is limited to 18MB and the table with evict the rows with the least frequent query
+as long as the memory used is less than 20MB as specified in this project.
+
+* Measurement Method *
+- Implemented a geolocation method, and a “ping" method that pings to 2 nearest servers from which we ping
+to client then pick the one with lowest round-trip-time (RTT).
+- After testing, we decide to go with geolocation as its performance is more consistent.
+- Mechanism and what we learn: Create a local server that actively ping to a set of client ip and store the RTT
+running in the background. Every time the DNS server is called, the ip with fastest RTT will be returned to the
+client. This is really challenging without the use of subprocess, so we do not have enough time to fully understand
+and implement that. If we have time, we will definitely find a way to get to it.
+- We evaluate the effective through trial and errors, also based on our group’s beacon status found at
+port 40009 on https://p5-beacon.5700.network/.
+
+* Scripts Writing *
+- We struggle with this at first as we do not have a lot of experience doing it. Lots of documentations consulted.
+- The struggle was mainly due to syntax errors. Every single space matters!
+- The stop script at first logged out ssh sessions due to the fact that we killed all process with our username bttb,
+later on, we design it so that it will only kill necessary programs, thus not logging out of the ssh sessions anymore.
+
+** END OF THIS SECTION **
+
+
+** Individual Contributions **
 - Thai Pham:
 + Implement DNS Server
 + Implement HTTP Server
-+ Implement Measurement
++ Implement Cache Mechanism
++ Optimize performance
++ Write README
 
 - Bach Nguyen:
 + Implement DNS Server
-+ Write deploy/run/stop CDN script
++ Implement Measurement Technique
++ Write deploy/run/stop CDN scripts
++ Write README
 
 
-# reference: https://gist.github.com/pklaus/b5a7876d4d2cf7271873
+** References **
+http.server — HTTP servers — Python 3.10.4 documentation. (n.d.). Python Doc. https://docs.python.org/3/library/http.server.html
+sqlite3 — DB-API 2.0 interface for SQLite databases — Python 3.10.4 documentation. (n.d.). Python Doc. https://docs.python.org/3/library/sqlite3.html
+dns.rdtypes.ANY.SOA.SOA. (n.d.). DNS Python. https://www.dnspython.org/docs/1.15.0/dns.rdtypes.ANY.SOA.SOA-class.html#section-InstanceVariables
+GeeksforGeeks. (2021, April 9). Program for distance between two points on earth. https://www.geeksforgeeks.org/program-distance-two-points-earth/
+ANN: dnslib-0.9.0 - DNS library for Python (with Py2/3 support). (n.d.). Dnslib. https://mail.python.org/pipermail/python-announce-list/2014-May/010291.html
+Simple DNS server (UDP and TCP) in Python using dnslib.py. (n.d.). Gist. https://gist.github.com/pklaus/b5a7876d4d2cf7271873
+Taylor, R. (2021, April 29). Know the eight most common DNS records. BlueCat Networks. https://bluecatnetworks.com/blog/know-the-eight-most-common-dns-records/
+An example of how to use getopts in bash. (2013, May 10). Stack Overflow. https://stackoverflow.com/questions/16483119/an-example-of-how-to-use-getopts-in-bash
+Chapter 8 - SOA Resource Record. (n.d.). Zytrax.Open. https://www.zytrax.com/books/dns/ch8/soa.html
+Man pages for linux commands

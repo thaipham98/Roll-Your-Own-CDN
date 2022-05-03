@@ -23,17 +23,6 @@ REPLICA_HOST = {
 }
 
 
-# mapping: domain name <-> [longitude, latitude]
-# REPLICA_IP_LOCATION = {
-#     REPLICA_1: [-77.4874, 33.844], #Atlanta
-#     REPLICA_2: [-122.0004, 37.5625], #Fremont/LA
-#     REPLICA_3: [151.2006, -33.8715], #Sydney
-#     REPLICA_4: [8.6843, 50.1188], #Frankfurt/Germany
-#     REPLICA_5: [139.6899, 35.6893], #Tokyo
-#     REPLICA_6: [-0.0955, 51.5095], #London
-#     REPLICA_7: [72.8856, 19.0748], #India
-# }
-
 def convert(ip):
     lon, lat = get_ip_geolocation(ip)
     return [float(lon), float(lat)]
@@ -62,8 +51,6 @@ REPLICA_IP_LOCATION = {
     REPLICA_7: convert(REPLICA_7),  # India
 }
 
-for addr in REPLICA_IP_LOCATION.values():
-    print(addr)
 
 ip_cache = {}
 
