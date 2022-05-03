@@ -5,6 +5,7 @@ import sys
 import threading
 import traceback
 
+import dnslib
 from dnslib import *
 
 # reference: https://gist.github.com/pklaus/b5a7876d4d2cf7271873
@@ -19,7 +20,8 @@ def dns_response(data, client_ip):
         try:
             request = DNSRecord.parse(data)
             break
-        except BufferError or DNSError:
+        except dnslib.buffer.BufferError or dnslib.dns.DNSError:
+            print("error")
             continue
 
     nearest_ip = get_nearest_replica(client_ip)
