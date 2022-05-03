@@ -1,4 +1,5 @@
 import socket
+import time
 from math import radians, cos, sin, asin, sqrt
 import urllib.request
 import json
@@ -43,7 +44,7 @@ def get_ip_geolocation(ip):
             response = urllib.request.urlopen('http://ip-api.com/json/' + ip)
             response_json = json.load(response)
             break
-        except Exception as e:
+        except:
             continue
     return response_json['lon'], response_json['lat']
 
@@ -85,14 +86,14 @@ def get_distance(srcLat, destLat, srcLong, destLong):
     return c * r
 
 
-MAX_NEAREST_REPLICAS_SELECTED = 1
-
+EXPIRY = 60 * 5
 
 def get_nearest_replica(client_ip):
-    if client_ip in ip_cache.keys():
-        return ip_cache[client_ip]
+    current_time = int(time.time())
+    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] >= current_time - EXPIRY:
+        return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
     nearest_ip = REPLICA_HOST[distance_tuple_list[0][0]]
-    ip_cache[client_ip] = nearest_ip
+    ip_cache[client_ip] = (nearest_ip, int(time.time()))
     return nearest_ip
