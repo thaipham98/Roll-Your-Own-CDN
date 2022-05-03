@@ -17,9 +17,9 @@ ORIGIN_SERVER = "cs5700cdnorigin.ccs.neu.edu"
 
 
 def get_time_from_scamper(client_ip):
-    stream = os.popen("scamper -c 'ping -c 1' -i " + client_ip)
+    stream = os.popen("ping -c 1 " + client_ip)
     output = stream.read()
-    startIdx = output.find("round-trip")
+    startIdx = output.find("rtt")
     ret1 = output[startIdx:]
     startIdx2 = ret1.find("=")
     ret2 = ret1[startIdx2:]

@@ -19,7 +19,7 @@ def dns_response(data, client_ip):
         try:
             request = DNSRecord.parse(data)
             break
-        except BufferError or DNSError:
+        except (BufferError, DNSError):
             continue
 
     nearest_ip = get_nearest_replica(client_ip)

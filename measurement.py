@@ -48,7 +48,6 @@ def get_ip_geolocation(ip):
             response_json = json.load(response)
             break
         except Exception as e:
-            print(e)
             continue
     return response_json['lon'], response_json['lat']
 
