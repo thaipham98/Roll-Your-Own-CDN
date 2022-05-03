@@ -1,5 +1,6 @@
 import _thread
 import socket
+import threading
 from math import radians, cos, sin, asin, sqrt
 import urllib.request
 import json
@@ -96,6 +97,15 @@ MAX_NEAREST_REPLICAS_SELECTED = 1
 
 FASTEST_RTT = []
 
+record = {}
+
+class myThread (threading.Thread):
+   def __init__(self, server_ip, client_ip):
+      threading.Thread.__init__(self)
+      self.server_ip = server_ip
+      self.client_ip = client_ip
+
+
 
 def get_rtt(server_ip, client_ip, record):
     try:
@@ -104,9 +114,7 @@ def get_rtt(server_ip, client_ip, record):
             record[rtt] = server_ip
             print("write rtt")
     except:
-        record[0] = server_ip
-
-
+        return
 
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
@@ -115,18 +123,27 @@ def get_nearest_replica(client_ip):
         return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
-    nearest_ip = REPLICA_HOST[distance_tuple_list[0][0]]
-    two_nearest_ip = [nearest_ip, REPLICA_HOST[distance_tuple_list[1][0]]]
+    nearest_geo_ip = REPLICA_HOST[distance_tuple_list[0][0]]
+    two_nearest_ip = [nearest_geo_ip, REPLICA_HOST[distance_tuple_list[1][0]]]
 
-    record = {}
-    try:
-        _thread.start_new_thread(get_rtt, (two_nearest_ip[0], client_ip, record))
-        _thread.start_new_thread(get_rtt, (two_nearest_ip[1], client_ip, record))
-    except:
-        return nearest_ip
+    #record = {}
+
+    thread1 = myThread(two_nearest_ip[0], client_ip)
+    thread2 = myThread(two_nearest_ip[1], client_ip)
+    thread1.start()
+    thread2.start()
+    thread1.join()
+    thread2.join()
+
+    # try:
+    #     _thread.start_new_thread(get_rtt, (two_nearest_ip[0], client_ip, record))
+    #     _thread.start_new_thread(get_rtt, (two_nearest_ip[1], client_ip, record))
+    # except:
+    #     return nearest_ip
+    if len(record) == 0:
+        return nearest_geo_ip
 
     print(record)
-
     best_rtt = min(record.keys())
     print("best rtt", best_rtt)
     best_ip = record[best_rtt]
@@ -134,6 +151,7 @@ def get_nearest_replica(client_ip):
     ip_cache[client_ip] = (best_ip, int(time.time()))
 
     print("go over")
+    record.clear()
     return best_ip
 
 
