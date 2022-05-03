@@ -64,7 +64,6 @@ class DNSServer:
         thread = threading.Thread(target=self.server.serve_forever)
         thread.daemon = True
         thread.start()
-        print("%s server loop running in thread: %s" % (self.server.RequestHandlerClass.__name__[:3], thread.name))
 
         try:
             while 1:

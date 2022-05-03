@@ -16,7 +16,6 @@ class Cache:
         return data is not None
 
     def get_data(self, path):
-        print("get data")
         self.handler.execute("SELECT * FROM Cache WHERE Path = :Path", {"Path": path})
         data = self.handler.fetchone()
         if self.hit(data):
