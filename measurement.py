@@ -33,6 +33,8 @@ REPLICA_IP_LOCATION = {
     REPLICA_7: [72.8856, 19.0748], #India
 }
 
+ip_cache = {}
+
 
 def get_ip_geolocation(ip):
     # Use ip-api to get geolocation, try until success
@@ -88,7 +90,10 @@ MAX_NEAREST_REPLICAS_SELECTED = 1
 
 
 def get_nearest_replica(client_ip):
+    if client_ip in ip_cache.keys():
+        return ip_cache[client_ip]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
     nearest_ip = REPLICA_HOST[distance_tuple_list[0][0]]
+    ip_cache[client_ip] = nearest_ip
     return nearest_ip
