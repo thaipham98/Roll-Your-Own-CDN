@@ -112,7 +112,6 @@ def get_rtt(server_ip, client_ip):
         with urllib.request.urlopen("http://" + server_ip + ":" + str(PORT) + "/rtt?ip=" + client_ip) as response:
             rtt = float(response.read())
             record[rtt] = server_ip
-            print("write rtt")
     except:
         return
 
@@ -120,7 +119,6 @@ def get_rtt(server_ip, client_ip):
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
     if client_ip in ip_cache.keys() and ip_cache[client_ip][1] >= current_time - EXPIRY:
-        print("hit in")
         return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
@@ -137,13 +135,9 @@ def get_nearest_replica(client_ip):
     if len(record) == 0:
         return nearest_geo_ip
 
-    print(record)
     best_rtt = min(record.keys())
-    print("best rtt", best_rtt)
     best_ip = record[best_rtt]
-    print(best_ip)
     ip_cache[client_ip] = (best_ip, int(time.time()))
 
-    print("go over")
     record.clear()
     return best_ip

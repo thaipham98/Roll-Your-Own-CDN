@@ -28,7 +28,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             parsed_path = urllib.parse.urlparse(self.path)
             query_string = urllib.parse.parse_qs(parsed_path.query)
             parsed_ip = query_string['ip'][0]
-            print('parsed ip', parsed_ip)
 
             rtt = get_time_from_scamper(parsed_ip)
             self.send_response(200)
@@ -38,7 +37,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             return
 
         if self.path == "/grading/beacon":
-            print("hit beacon:", self.path)
             self.send_response(204)
             self.end_headers()
             return
