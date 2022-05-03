@@ -20,7 +20,7 @@ def dns_response(data, client_ip):
         try:
             request = DNSRecord.parse(data)
             break
-        except dnslib.buffer.BufferError or dnslib.dns.DNSError:
+        except (BufferError, DNSError):
             print("error")
             continue
 
