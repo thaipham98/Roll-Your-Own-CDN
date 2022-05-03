@@ -12,29 +12,31 @@ REPLICA_5 = 'p5-http-e.5700.network'
 REPLICA_6 = 'p5-http-f.5700.network'
 REPLICA_7 = 'p5-http-g.5700.network'
 
-
 REPLICA_HOST = {
-    REPLICA_1: socket.gethostbyname(REPLICA_1), #50.116.41.109
-    REPLICA_2: socket.gethostbyname(REPLICA_2), #45.33.50.187
-    REPLICA_3: socket.gethostbyname(REPLICA_3), #194.195.121.150
-    REPLICA_4: socket.gethostbyname(REPLICA_4), #172.104.144.157
-    REPLICA_5: socket.gethostbyname(REPLICA_5), #172.104.110.211
-    REPLICA_6: socket.gethostbyname(REPLICA_6), #88.80.186.80
-    REPLICA_7: socket.gethostbyname(REPLICA_7), #172.105.55.115
+    REPLICA_1: socket.gethostbyname(REPLICA_1),  # 50.116.41.109
+    REPLICA_2: socket.gethostbyname(REPLICA_2),  # 45.33.50.187
+    REPLICA_3: socket.gethostbyname(REPLICA_3),  # 194.195.121.150
+    REPLICA_4: socket.gethostbyname(REPLICA_4),  # 172.104.144.157
+    REPLICA_5: socket.gethostbyname(REPLICA_5),  # 172.104.110.211
+    REPLICA_6: socket.gethostbyname(REPLICA_6),  # 88.80.186.80
+    REPLICA_7: socket.gethostbyname(REPLICA_7),  # 172.105.55.115
 }
+
 
 # mapping: domain name <-> [longitude, latitude]
-REPLICA_IP_LOCATION = {
-    REPLICA_1: [-77.4874, 33.844], #Atlanta
-    REPLICA_2: [-122.0004, 37.5625], #Fremont/LA
-    REPLICA_3: [151.2006, -33.8715], #Sydney
-    REPLICA_4: [8.6843, 50.1188], #Frankfurt/Germany
-    REPLICA_5: [139.6899, 35.6893], #Tokyo
-    REPLICA_6: [-0.0955, 51.5095], #London
-    REPLICA_7: [72.8856, 19.0748], #India
-}
+# REPLICA_IP_LOCATION = {
+#     REPLICA_1: [-77.4874, 33.844], #Atlanta
+#     REPLICA_2: [-122.0004, 37.5625], #Fremont/LA
+#     REPLICA_3: [151.2006, -33.8715], #Sydney
+#     REPLICA_4: [8.6843, 50.1188], #Frankfurt/Germany
+#     REPLICA_5: [139.6899, 35.6893], #Tokyo
+#     REPLICA_6: [-0.0955, 51.5095], #London
+#     REPLICA_7: [72.8856, 19.0748], #India
+# }
 
-ip_cache = {}
+def convert(ip):
+    lon, lat = get_ip_geolocation(ip)
+    return [float(lon), float(lat)]
 
 
 def get_ip_geolocation(ip):
@@ -47,6 +49,23 @@ def get_ip_geolocation(ip):
         except:
             continue
     return response_json['lon'], response_json['lat']
+
+
+# mapping: domain name <-> [longitude, latitude]
+REPLICA_IP_LOCATION = {
+    REPLICA_1: convert(REPLICA_1),  # Atlanta
+    REPLICA_2: convert(REPLICA_2),  # Fremont/LA
+    REPLICA_3: convert(REPLICA_3),  # Sydney
+    REPLICA_4: convert(REPLICA_4),  # Frankfurt/Germany
+    REPLICA_5: convert(REPLICA_5),  # Tokyo
+    REPLICA_6: convert(REPLICA_6),  # London
+    REPLICA_7: convert(REPLICA_7),  # India
+}
+
+for addr in REPLICA_IP_LOCATION.values():
+    print(addr)
+
+ip_cache = {}
 
 
 def get_physical_distance_to_client(client_ip):
@@ -87,6 +106,7 @@ def get_distance(srcLat, destLat, srcLong, destLong):
 
 
 EXPIRY = 60 * 5
+
 
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
