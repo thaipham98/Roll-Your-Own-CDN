@@ -15,7 +15,13 @@ TTL = 60 * 5
 
 
 def dns_response(data, client_ip):
-    request = DNSRecord.parse(data)
+    while True:
+        try:
+            request = DNSRecord.parse(data)
+            break
+        except BufferError or DNSError:
+            continue
+
     nearest_ip = get_nearest_replica(client_ip)
 
     reply = DNSRecord(DNSHeader(id=request.header.id, qr=1, aa=1, ra=1), q=request.q)
