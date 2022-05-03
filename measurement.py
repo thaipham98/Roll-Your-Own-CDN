@@ -1,7 +1,12 @@
+import _thread
 import socket
 from math import radians, cos, sin, asin, sqrt
 import urllib.request
 import json
+import time
+
+PORT = 40009
+EXPIRY = 10
 
 REPLICA_1 = 'p5-http-a.5700.network'
 REPLICA_2 = 'p5-http-b.5700.network'
@@ -89,13 +94,52 @@ def get_distance(srcLat, destLat, srcLong, destLong):
 MAX_NEAREST_REPLICAS_SELECTED = 1
 
 
+FASTEST_RTT = []
+
+
+def get_rtt(server_ip, client_ip, record):
+    try:
+        with urllib.request.urlopen("http://" + server_ip + ":" + str(PORT) + "/rtt?ip=" + client_ip) as response:
+            rtt = float(response.read())
+            record[rtt] = server_ip
+            print("write rtt")
+    except:
+        record[0] = server_ip
+
+
+
 def get_nearest_replica(client_ip):
-    if client_ip in ip_cache.keys():
-        print("ip cache hit for client ip", client_ip, ' with nearest ip ', ip_cache[client_ip])
-        return ip_cache[client_ip]
+    current_time = int(time.time())
+    if client_ip in ip_cache.keys() and ip_cache[client_ip][1] <= current_time + EXPIRY:
+        print("hit in")
+        return ip_cache[client_ip][0]
     replica_distance = get_physical_distance_to_client(client_ip)
     distance_tuple_list = sorted(replica_distance, key=lambda x: x[1])
     nearest_ip = REPLICA_HOST[distance_tuple_list[0][0]]
-    ip_cache[client_ip] = nearest_ip
-    print('set ip cache for ip', client_ip, ' with nearest ip', nearest_ip)
-    return nearest_ip
+    two_nearest_ip = [nearest_ip, REPLICA_HOST[distance_tuple_list[1][0]]]
+
+    record = {}
+    try:
+        _thread.start_new_thread(get_rtt, (two_nearest_ip[0], client_ip, record))
+        _thread.start_new_thread(get_rtt, (two_nearest_ip[1], client_ip, record))
+    except:
+        return nearest_ip
+
+    print(record)
+
+    best_rtt = min(record.keys())
+    print("best rtt", best_rtt)
+    best_ip = record[best_rtt]
+    print(best_ip)
+    ip_cache[client_ip] = (best_ip, int(time.time()))
+
+    print("go over")
+    return best_ip
+
+
+
+
+
+
+
+

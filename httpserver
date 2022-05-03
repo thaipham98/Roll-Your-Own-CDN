@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-
+import os
 import socket
 import sys
 import threading
 import time
 from http.server import *
 import urllib.request
+import urllib.parse
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL)
-
 from cache import Cache
 
 HOSTNAME = socket.gethostname()
@@ -16,9 +16,27 @@ ORIGIN_SERVER_PORT = 8080
 ORIGIN_SERVER = "cs5700cdnorigin.ccs.neu.edu"
 
 
+def get_time_from_scamper(client_ip):
+    stream = os.popen("scamper -c 'ping -c 1' -i " + client_ip)
+    output = stream.read()
+    return output.split("\n")[-2].split("/")[4]
+
 class RequestHandler(BaseHTTPRequestHandler):
     cache = None
     def do_GET(self):
+        if self.path.startswith('/rtt'):
+            parsed_path = urllib.parse.urlparse(self.path)
+            query_string = urllib.parse.parse_qs(parsed_path.query)
+            parsed_ip = query_string['ip'][0]
+            print('parsed ip', parsed_ip)
+
+            rtt = get_time_from_scamper(parsed_ip)
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(bytes(rtt))
+            return
+
         if self.path == "/grading/beacon":
             print("hit beacon:", self.path)
             self.send_response(204)
