@@ -28,7 +28,7 @@ class Cache:
             self.connection.commit()
             return content
 
-        print("before insert", self.get_cache_size())
+        #print("before insert", self.get_cache_size())
 
         return None
 

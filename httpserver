@@ -6,6 +6,8 @@ import threading
 import time
 from http.server import *
 import urllib.request
+from signal import signal, SIGPIPE, SIG_DFL
+signal(SIGPIPE,SIG_DFL)
 
 from cache import Cache
 
