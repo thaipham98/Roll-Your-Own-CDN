@@ -17,26 +17,25 @@ REPLICA_5 = 'p5-http-e.5700.network'
 REPLICA_6 = 'p5-http-f.5700.network'
 REPLICA_7 = 'p5-http-g.5700.network'
 
-
 REPLICA_HOST = {
-    REPLICA_1: socket.gethostbyname(REPLICA_1), #50.116.41.109
-    REPLICA_2: socket.gethostbyname(REPLICA_2), #45.33.50.187
-    REPLICA_3: socket.gethostbyname(REPLICA_3), #194.195.121.150
-    REPLICA_4: socket.gethostbyname(REPLICA_4), #172.104.144.157
-    REPLICA_5: socket.gethostbyname(REPLICA_5), #172.104.110.211
-    REPLICA_6: socket.gethostbyname(REPLICA_6), #88.80.186.80
-    REPLICA_7: socket.gethostbyname(REPLICA_7), #172.105.55.115
+    REPLICA_1: socket.gethostbyname(REPLICA_1),  # 50.116.41.109
+    REPLICA_2: socket.gethostbyname(REPLICA_2),  # 45.33.50.187
+    REPLICA_3: socket.gethostbyname(REPLICA_3),  # 194.195.121.150
+    REPLICA_4: socket.gethostbyname(REPLICA_4),  # 172.104.144.157
+    REPLICA_5: socket.gethostbyname(REPLICA_5),  # 172.104.110.211
+    REPLICA_6: socket.gethostbyname(REPLICA_6),  # 88.80.186.80
+    REPLICA_7: socket.gethostbyname(REPLICA_7),  # 172.105.55.115
 }
 
 # mapping: domain name <-> [longitude, latitude]
 REPLICA_IP_LOCATION = {
-    REPLICA_1: [-77.4874, 33.844], #Atlanta
-    REPLICA_2: [-122.0004, 37.5625], #Fremont/LA
-    REPLICA_3: [151.2006, -33.8715], #Sydney
-    REPLICA_4: [8.6843, 50.1188], #Frankfurt/Germany
-    REPLICA_5: [139.6899, 35.6893], #Tokyo
-    REPLICA_6: [-0.0955, 51.5095], #London
-    REPLICA_7: [72.8856, 19.0748], #India
+    REPLICA_1: [-77.4874, 33.844],  # Atlanta
+    REPLICA_2: [-122.0004, 37.5625],  # Fremont/LA
+    REPLICA_3: [151.2006, -33.8715],  # Sydney
+    REPLICA_4: [8.6843, 50.1188],  # Frankfurt/Germany
+    REPLICA_5: [139.6899, 35.6893],  # Tokyo
+    REPLICA_6: [-0.0955, 51.5095],  # London
+    REPLICA_7: [72.8856, 19.0748],  # India
 }
 
 ip_cache = {}
@@ -94,20 +93,20 @@ def get_distance(srcLat, destLat, srcLong, destLong):
 
 MAX_NEAREST_REPLICAS_SELECTED = 1
 
-
 FASTEST_RTT = []
 
 record = {}
 
-class myThread (threading.Thread):
-   def __init__(self, server_ip, client_ip):
-      threading.Thread.__init__(self)
-      self.server_ip = server_ip
-      self.client_ip = client_ip
+
+class myThread(threading.Thread):
+    def __init__(self, server_ip, client_ip):
+        threading.Thread.__init__(self)
+        self.server_ip = server_ip
+        self.client_ip = client_ip
 
 
-
-def get_rtt(server_ip, client_ip, record):
+def get_rtt(server_ip, client_ip):
+    global record
     try:
         with urllib.request.urlopen("http://" + server_ip + ":" + str(PORT) + "/rtt?ip=" + client_ip) as response:
             rtt = float(response.read())
@@ -115,6 +114,7 @@ def get_rtt(server_ip, client_ip, record):
             print("write rtt")
     except:
         return
+
 
 def get_nearest_replica(client_ip):
     current_time = int(time.time())
@@ -126,7 +126,7 @@ def get_nearest_replica(client_ip):
     nearest_geo_ip = REPLICA_HOST[distance_tuple_list[0][0]]
     two_nearest_ip = [nearest_geo_ip, REPLICA_HOST[distance_tuple_list[1][0]]]
 
-    #record = {}
+    # record = {}
 
     thread1 = myThread(two_nearest_ip[0], client_ip)
     thread2 = myThread(two_nearest_ip[1], client_ip)
@@ -153,11 +153,3 @@ def get_nearest_replica(client_ip):
     print("go over")
     record.clear()
     return best_ip
-
-
-
-
-
-
-
-
