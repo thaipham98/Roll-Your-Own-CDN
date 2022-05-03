@@ -13,13 +13,13 @@ REPLICA_7 = 'p5-http-g.5700.network'
 
 
 REPLICA_HOST = {
-    REPLICA_1: socket.gethostbyname(REPLICA_1),
-    REPLICA_2: socket.gethostbyname(REPLICA_2),
-    REPLICA_3: socket.gethostbyname(REPLICA_3),
-    REPLICA_4: socket.gethostbyname(REPLICA_4),
-    REPLICA_5: socket.gethostbyname(REPLICA_5),
-    REPLICA_6: socket.gethostbyname(REPLICA_6),
-    REPLICA_7: socket.gethostbyname(REPLICA_7),
+    REPLICA_1: socket.gethostbyname(REPLICA_1), #50.116.41.109
+    REPLICA_2: socket.gethostbyname(REPLICA_2), #45.33.50.187
+    REPLICA_3: socket.gethostbyname(REPLICA_3), #194.195.121.150
+    REPLICA_4: socket.gethostbyname(REPLICA_4), #172.104.144.157
+    REPLICA_5: socket.gethostbyname(REPLICA_5), #172.104.110.211
+    REPLICA_6: socket.gethostbyname(REPLICA_6), #88.80.186.80
+    REPLICA_7: socket.gethostbyname(REPLICA_7), #172.105.55.115
 }
 
 # mapping: domain name <-> [longitude, latitude]
