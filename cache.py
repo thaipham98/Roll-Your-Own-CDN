@@ -19,7 +19,6 @@ class Cache:
         self.handler.execute("SELECT * FROM Cache WHERE Path = :Path", {"Path": path})
         data = self.handler.fetchone()
         if self.hit(data):
-            #print("hit!")
             content = zlib.decompress(data[1])
             frequency = data[2]
             frequency += 1
@@ -27,8 +26,6 @@ class Cache:
                                  {"Frequency": frequency, "Path": path})
             self.connection.commit()
             return content
-
-        #print("before insert", self.get_cache_size())
 
         return None
 
@@ -58,7 +55,6 @@ class Cache:
         self.connection.commit()
 
     def evict(self, file_size):
-        #print("evict data")
         cache_size = self.get_cache_size()
         while cache_size + file_size >= MB_20:
             self.handler.execute(

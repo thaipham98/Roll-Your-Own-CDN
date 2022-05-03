@@ -21,8 +21,8 @@ servers_length=${#replica_servers[@]}
  
 for (( i = 0; i < ${servers_length}; i++ ));
 do
-        ssh -i $keyfile $username@${replica_servers[$i]} pkill -u $username
+        ssh -i $keyfile $username@${replica_servers[$i]} 'pkill -u '$username' python3; pkill -u '$username' httpserver'
 done
- 
+
 dns_server="p5-dns.5700.network"
-ssh -i $keyfile $username@$dns_server pkill -u $username
+ssh -i $keyfile $username@$dns_server 'pkill -u '$username' python3; pkill -u '$username' dnsserver'
